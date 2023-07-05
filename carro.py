@@ -1,14 +1,15 @@
 import mysql.connector
 conexao = mysql.connector.connect(
-  host = "localhost",
-  user = "root",
-  password = "",
+  host = "db4free.net",
+  user = "mcqueen",
+  password = "mcqueen123",
   database = "mcqueen"
 )
+
 cursor = conexao.cursor()
 def cadastroCarro(modelo,fabricante,ano,combustivel,porte,cambio,portas,ocupantes,valor):
     cursor=conexao.cursor()
-    sql=f"INSERT INTO carro(modelo,fabricante,ano,combustivel,porte,cambio,portas,ocupantes) VALUES ('{modelo}','{fabricante}',{ano},'{combustivel}',{porte},'{cambio}',{portas},{ocupantes},{valor})"
+    sql=f"INSERT INTO carros(modelo,fabricante,ano_lancamento,combustivel,porte,cambio,portas,ocupantes,valor_aluguel) VALUES ('{modelo}','{fabricante}','{ano}','{combustivel}','{porte}','{cambio}',{portas},{ocupantes},{valor})"
     cursor.execute(sql)
     conexao.commit()
 
@@ -21,14 +22,14 @@ def exibirCarro():
 
 def atualizarCarro(idCarro,modelo,ano,porte,cambio,valor):
     cursor = conexao.cursor()
-    sql = f"UPDATE carros SET modelo = '{modelo}', ano = '{ano}',porte {porte},cambio {cambio},valor{valor} WHERE idcarros = {idCarro}"
+    sql = f"UPDATE carros SET modelo = '{modelo}', ano_lancamento = '{ano}',porte {porte},cambio {cambio},valor_aluguel{valor} WHERE idcarros = {idCarro}"
     cursor.execute(sql)
     conexao.commit()
     print("O carro foi atualizado com sucesso!")
 
 def excluirCarro():
     cursor = conexao.cursor()
-    sql = f"DELETE FROM carro WHERE id=2"
+    sql = f"DELETE FROM carros WHERE id=2"
     cursor.execute(sql)
     conexao.commit()
 

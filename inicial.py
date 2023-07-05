@@ -1,5 +1,4 @@
-from cliente import Cliente
-from cliente import Pessoa
+from cliente import Cliente, Pessoa
 import carro
 import mysql.connector
 conexao = mysql.connector.connect(
@@ -33,6 +32,7 @@ if usuario == 'bruno':
 
         nome = input("Digite o nome: ")
 
+
         email = input("Digite o email: ")
         email_validado = Pessoa.validar_email(email)
         if email_validado == False:
@@ -51,7 +51,9 @@ if usuario == 'bruno':
         print("\nInformações adicionadas:\n")
 
         cliente = Cliente(cpf,nome,email,telefone,cartao)
+        cliente.nomear()
         cliente.salvar_cliente_banco()
+        
 
     elif opcao == "2":
         cpf = input("Digite o CPF:")
@@ -112,10 +114,10 @@ elif usuario == 'stefany' or usuario == 'julia':
         combustivel = input("Digite o tipo de combustivel do carro:\n")
         porte = input("Digite o porte do carro:\n")
         cambio = input("Digite o câmbio do carro:\n")
-        portas = input("Digite a quantas portas tem o carro:\n")
-        ocupantes = input("Digite quantas ocupantes o carro suporta:\n")
-        valor = input("Digite o valor do aluguel:")
-        cadastroCarro(modelo,fabricante,ano,combustivel,porte,cambio,portas,ocupantes,valor)
+        portas = int(input("Digite a quantas portas tem o carro:\n"))
+        ocupantes = int(input("Digite quantas ocupantes o carro suporta:\n"))
+        valor = float(input("Digite o valor do aluguel:"))
+        carro.cadastroCarro(modelo,fabricante,ano,combustivel,porte,cambio,portas,ocupantes,valor)
     
     elif opcao == "2":
         idCarro= input("Digite o ID do carro ao ser atualizado: ")
@@ -124,19 +126,20 @@ elif usuario == 'stefany' or usuario == 'julia':
         porte=int(input("Digite o porte do carro:"))
         cambio=input("Digite o câmbio do carro:")
         valor=float(input("Digite o novo valor do aluguel:"))
-        atualizarCarro(idCarro, modelo, ano,porte,cambio,valor)
+        carro.atualizarCarro(idCarro, modelo, ano,porte,cambio,valor)
 
     elif opcao == "3":
-        exibirCarro()
+        carro.exibirCarro()
 
     elif opcao == "4":
         modelo= input("Digite o modelo do carro a ser excluído: ")
-        excluirCarro()
+        carro.excluirCarro()
 
     elif opcao == "5":
         ...
 
     elif opcao == "0":
+        print("\nAté Logo...\n")
         break
 
     else:

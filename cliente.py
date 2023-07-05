@@ -16,7 +16,10 @@ class Pessoa:
       self.nome = nome
       self.email = email
       self.telefone = telefone
-       
+
+  def nomear(self):
+    raise Exception("função não implementada")
+
   @staticmethod
   def validar_cpf(n_cpf):
     if len(n_cpf) != 11:
