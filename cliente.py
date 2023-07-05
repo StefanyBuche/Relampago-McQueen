@@ -127,13 +127,13 @@ class Funcionario (Pessoa):
   
   def salvar_funciona_banco (self):
       cursor=conexao.cursor()
-      sql = f"INSERT INTO pessoas (idCPF, nome, email, telefone) VALUES ('{self.cpf}','{self.nome}','{self.email}','{self.telefone}')"
+      sql = f"INSERT INTO ... (...) VALUES ('{...}','{...}','{...}','{...}')"
       cursor.execute(sql)
       conexao.commit()
 
   def alterar_funciona_banco(self):
       cursor=conexao.cursor()
-      sql = f"UPDATE pessoas SET nome = '{self.nome}', email = '{self.email}',telefone = '{self.telefone}',cartao ='{self.cartao}' WHERE idCPF = '{self.cpf}'"
+      sql = f"UPDATE ... '"
       cursor.execute(sql)
       conexao.commit()
 
@@ -141,81 +141,11 @@ class Funcionario (Pessoa):
       sql = "select * from pessoas"
       cursor.execute(sql)
       linhas = cursor.fetchall()
-      print("Número total de  registro retornado: ",cursor.rowcount)
-      print("Clientes:\n")
+      print("Número total de funcionário retornado: ",cursor.rowcount)
       for linha in linhas:
           print("CPF:",linha[0])
           print("Nome:",linha[1])
           print("E-mail:",linha[2])
           print("Nº telefone:",linha[3])
-          print("Nº Cartão:",linha[4],"\n")
+          print("Cargo ocupado:",linha[4],"\n")
 
-
-
-# def menu():
-#     while True:
-#         print("\n--Area Cliente--\n")
-#         print("1. Cadastrar")
-#         print("2. Atualizar cadastro")
-#         print("3. Ver clientes")
-#         opcao = input("Digite o numero de sua escolha: ")
-
-#         if opcao == "1":
-#           cpf = ""
-#           nome = ""
-#           email = ""
-#           telefone = ""
-#           cartao = ""
-#           print("Informações adicionadas:\n")
-
-#           cpf_validado = Pessoa.validar_cpf(cpf)         
-#           if cpf_validado == False:
-#             raise Exception()
-          
-#           email_validado = Pessoa.validar_email(email)
-#           if email_validado == False:
-#             raise Exception()
-          
-#           numero_validado = Pessoa.validar_numero(telefone)
-#           if numero_validado == False:
-#             raise Exception()
-            
-#           cartao_validado = Pessoa.validar_cartao(cartao)
-#           if cartao_validado == False:
-#             raise Exception()
-        
-#           pessoa = Pessoa(cpf, nome, email, telefone, cartao)
-#           pessoa.salvar_no_banco()
-
-#         elif opcao == "2":
-#           cpf = input("Digite seu CPF:")
-#           nome = input("Atualize seu nome: ")
-#           email = input("Atualize seu e-mail: ")
-#           telefone = input("Atualize seu número: ")
-#           cartao = input("Atualize seu cartão: ")
-          
-#           cpf_validado = Pessoa.validar_cpf(cpf)         
-#           if cpf_validado == False:
-#             raise Exception()
-          
-#           email_validado = Pessoa.validar_email(email)
-#           if email_validado == False:
-#             raise Exception()
-          
-#           numero_validado = Pessoa.validar_numero(telefone)
-#           if numero_validado == False:
-#             raise Exception()
-
-#           cartao_validado = Pessoa.validar_cartao(cartao)
-#           if cartao_validado == False:
-#             raise Exception()
-          
-#           pessoa = Pessoa(cpf, nome, email, telefone, cartao)
-#           pessoa.alterar_no_banco()
-#         elif opcao == "3":
-#           consultar_clientes()
-#         else:
-#             print("!!!Opção inválida!!!")
-        
-# menu()
-# conexao.close()
