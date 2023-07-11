@@ -1,10 +1,11 @@
 from cliente import Cliente, Pessoa
 import carro
 import mysql.connector
+from aluguel import Aluguel
 conexao = mysql.connector.connect(
-  host = "db4free.net",
-  user = "mcqueen",
-  password = "mcqueen123",
+  host = "localhost",
+  user = "root",
+  password = "",
   database = "mcqueen"
 )
 
@@ -21,32 +22,44 @@ if usuario == 'bruno':
     print("2. Atualizar cadastro")
     print("3. Ver clientes")
     print("4. Fechar contrato de aluguel")
+    print("5. Registrar retorno")
     print("0. Sair da Area Cliente")
     opcao = input("Digite o numero de sua escolha: ")
 
     if opcao == "1":
-        cpf = input("Digite o CPF: ")
-        cpf_validado = Pessoa.validar_cpf(cpf)         
-        if cpf_validado == False:
-          raise Exception()
-
+        while True: 
+            cpf = input("Digite o CPF: ")
+            cpf_validado = Pessoa.validar_cpf(cpf)  
+            if cpf_validado == False:
+                print("Ops.")
+            else:
+                break
+        
         nome = input("Digite o nome: ")
 
+        while True: 
+            email = input("Digite o email: ")
+            email_validado = Pessoa.validar_email(email)
+            if email_validado == False:
+                print("E-mail inválido.")
+            else:
+                break
 
-        email = input("Digite o email: ")
-        email_validado = Pessoa.validar_email(email)
-        if email_validado == False:
-          raise Exception()        
+        while True: 
+            telefone = input("Digite o telefone: ")
+            numero_validado = Pessoa.validar_numero(telefone)
+            if numero_validado == False:
+                print("Telefone inválido.")
+            else:
+                break
 
-        telefone = input("Digite o telefone: ")
-        numero_validado = Pessoa.validar_numero(telefone)
-        if numero_validado == False:
-          raise Exception()        
-
-        cartao = input("Digite os 16 nº cartão: ")
-        cartao_validado = Cliente.validar_cartao(cartao)
-        if cartao_validado == False:
-          raise Exception()        
+        while True: 
+            cartao = input("Digite os 16 nº cartão: ")
+            cartao_validado = Cliente.validar_cartao(cartao)
+            if cartao_validado == False:
+                print("Número do cartão inválido.")
+            else:
+                break
         
         print("\nInformações adicionadas:\n")
 
@@ -56,29 +69,42 @@ if usuario == 'bruno':
         
 
     elif opcao == "2":
-        cpf = input("Digite o CPF:")
+        while True:
+            cpf = input("Digite o CPF:")
+            cpf_validado = Pessoa.validar_cpf(cpf)  
+            if cpf_validado == False:
+                print("CPF inválido.")
+            else:
+                break
+
         nome = input("Atualize o nome: ")
-        email = input("Atualize o e-mail: ")
-        telefone = input("Atualize o número: ")
-        cartao = input("Atualize o cartão: ")
+
+        while True:    
+            email = input("Atualize o e-mail: ")
+            email_validado = Pessoa.validar_email(email)
+            if email_validado == False:
+                print("E-mail inválido.")
+            else:
+                break
+
+        while True:
+            telefone = input("Atualize o número: ")
+            numero_validado = Pessoa.validar_numero(telefone)
+            if numero_validado == False:
+                print("Telefone inválido.")
+            else:
+                break
+
+        while True:
+            cartao = input("Atualize o cartão: ")
+            cartao_validado = Cliente.validar_cartao(cartao)
+            if cartao_validado == False:
+                print("Número do cartão inválido.")
+            else:
+                break
 
         print("\n Cadastro atualizado:\n")
       
-        cpf_validado = Pessoa.validar_cpf(cpf)         
-        if cpf_validado == False:
-          raise Exception()
-        
-        email_validado = Pessoa.validar_email(email)
-        if email_validado == False:
-          raise Exception()
-        
-        numero_validado = Pessoa.validar_numero(telefone)
-        if numero_validado == False:
-          raise Exception()
-
-        cartao_validado = Cliente.validar_cartao(cartao)
-        if cartao_validado == False:
-          raise Exception()
         Cliente.alterar_cliente_banco(cpf,nome,email,telefone,cartao)
         print("\n")
 
@@ -86,7 +112,41 @@ if usuario == 'bruno':
         Cliente.consultar_clientes_banco()
 
     elif opcao == "4":
-      ...
+        while True:
+            print("\nCarros indisponíveis:")
+            Aluguel.listar_carros_disponiveis()
+
+            cliente = input("Digite o CPF do cliente: ")
+            carro = int(input("Digite o ID do veículo: "))
+            alugando = Aluguel (cliente, carro)
+            alugando.informacao_carro()
+            alugando.informacao_cliente()
+
+
+            quantidade_dia = int(input("Quando dias de aluguel: "))
+            alugando.valor_aluguel(quantidade_dia)
+
+            dia_saida = input("Dia de saída 'ano-mes-dia': ")
+            dia_previa_retorno = input("Dia retorno prévio 'ano-mes-dia': ")
+            dt = alugando.datas(dia_saida,dia_previa_retorno)
+            if dt == False:
+                raise Exception()
+
+            pgto = input("Forma de pagamento: ")
+            alugando.pagamento(pgto)
+            alugando.salvar_aluguel()
+
+            break
+
+    elif opcao == "5":
+        
+        cliente = input("Digite o CPF do cliente: ")
+        carro = int(input("Digite o ID do veículo: "))
+        alugando = Aluguel(cliente,carro)
+
+        dia_retorno = input("Dia retorno 'ano-mes-dia': ")
+        res = alugando.retorno_multa(dia_retorno)
+        alugando.atualizar_aluguel(carro)
 
     elif opcao == "0":
         print("\nAté logo...\n")
@@ -116,27 +176,28 @@ elif usuario == 'stefany' or usuario == 'julia':
         cambio = input("Digite o câmbio do carro:\n")
         portas = int(input("Digite a quantas portas tem o carro:\n"))
         ocupantes = int(input("Digite quantas ocupantes o carro suporta:\n"))
-        valor = float(input("Digite o valor do aluguel:"))
+        valor = int(input("Valor diária: "))
+        
         carro.cadastroCarro(modelo,fabricante,ano,combustivel,porte,cambio,portas,ocupantes,valor)
     
     elif opcao == "2":
         idCarro= input("Digite o ID do carro ao ser atualizado: ")
         modelo= input("Digite o novo modelo do carro: ")
         ano= int(input("Digite o novo ano do carro: "))
-        porte=int(input("Digite o porte do carro:"))
-        cambio=input("Digite o câmbio do carro:")
-        valor=float(input("Digite o novo valor do aluguel:"))
+        porte= input("Digite o porte do carro: ")
+        cambio= input("Digite o câmbio do carro: ")
+        valor= input("Digite o novo valor do aluguel: ")
         carro.atualizarCarro(idCarro, modelo, ano,porte,cambio,valor)
 
     elif opcao == "3":
         carro.exibirCarro()
 
     elif opcao == "4":
-        modelo= input("Digite o modelo do carro a ser excluído: ")
-        carro.excluirCarro()
+        modelo= input("Digite o ID do carro a ser excluído: ")
+        carro.excluirCarro(modelo)
 
     elif opcao == "5":
-        ...
+        Aluguel.consultar_aluguel()
 
     elif opcao == "0":
         print("\nAté Logo...\n")

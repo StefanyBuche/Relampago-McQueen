@@ -3,9 +3,9 @@ import phonenumbers
 from phonenumbers import geocoder
 import mysql.connector
 conexao = mysql.connector.connect(
-  host = "db4free.net",
-  user = "mcqueen",
-  password = "mcqueen123",
+  host = "localhost",
+  user = "root",
+  password = "",
   database = "mcqueen"
 )
 cursor = conexao.cursor()
@@ -23,8 +23,8 @@ class Pessoa:
   @staticmethod
   def validar_cpf(n_cpf):
     if len(n_cpf) != 11:
-      print("CPF inválido.")
-      return False
+        print("CPF inválido.")
+        return False
 
     soma = 0
     for i in range(0, 9):
@@ -44,7 +44,7 @@ class Pessoa:
         if resto != int(n_cpf[10]):
             print("CPF inválido...")
         else:
-          print("CPF:",n_cpf)
+            print("CPF:",n_cpf)
       
         return True
  
@@ -53,33 +53,38 @@ class Pessoa:
       validador = re.match(r'^[a-z-0-9_.+-]+@[a-z-0-9-]+\.[a-z-0-9]+', validar_email) 
       # https://www.hashtagtreinamentos.com/regular-expressions-no-python?gad=1&gclid=Cj0KCQjw4s-kBhDqARIsAN-ipH2bqCI7kZgefuTenHNH8UPIZenfYGzxF0zvxpc4c-h1WHBDIJv4RxYaAtqSEALw_wcB
       if validador is None:
-          print("Ops. E-mail inválido.")
-          return False
+            print("Ops. E-mail inválido.")
+            return False
 
       print("E-mail:",validar_email)
       return True
 
   @staticmethod
-  def validar_numero(numero):
+  def validar_numero(numero): #https://pypi.org/project/phonenumbers/
       if len(numero) < 12:
-          print("Número inválido. \nDigite o número com cód. postal do país(ex.'+55') e o DDD(ex'11')")
-          return False
+            print("Número inválido. \nDigite o número com cód. postal do país(ex.'+55') e o DDD(ex'11')")
+            return False
 
-      tell_ajustado = phonenumbers.parse(numero)
-      # print(tell_ajustado)
-      local = geocoder.description_for_number(tell_ajustado, 'pt-br')
-      formato = phonenumbers.format_number(tell_ajustado, phonenumbers.PhoneNumberFormat.INTERNATIONAL)
-      #https://pypi.org/project/phonenumbers/
-      print("Numero telefônico:",formato)
-      print("DDD de : ", local)
-      return True
+      try :
+            tell_ajustado = phonenumbers.parse(numero)
+            # print(tell_ajustado)
+            local = geocoder.description_for_number(tell_ajustado, 'pt-br')
+            formato = phonenumbers.format_number(tell_ajustado, phonenumbers.PhoneNumberFormat.INTERNATIONAL)
+            print("Numero telefônico:",formato)
+            print("DDD de : ", local)
+      except:
+            print("Erro no nº de telefone.")
+            return False
 
 
 class Cliente (Pessoa):
   def __init__(self,cpf,nome,email,telefone,cartao):
     super().__init__(cpf,nome,email,telefone)
     self.cartao = cartao
-  
+
+  def nomear(self):
+    print(self.nome)
+
   @staticmethod
   def validar_cartao(n_cartao):
       if len(n_cartao) != 16:
