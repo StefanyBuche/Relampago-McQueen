@@ -16,26 +16,34 @@ class Aluguel:
     def __init__(self,idCliente,idCarro):
        self.idCliente = idCliente
        self.idCarro = idCarro
-    #    self.idAluguel = idAluguel
 
     def informacao_carro(self):
         # sql = f"select modelo, valor_aluguel from carros where idcarros = {self.idCarro}"
         sql = f"select * from carros where idcarros = {self.idCarro}"
         cursor.execute(sql)
         resultadoCarro = cursor.fetchall()
-        carro = resultadoCarro[0]
-        self.carro = carro
-        print("\nDescrição do carro alugado:\n")
-        for linha in resultadoCarro:
-            mostrar_informacao_carro(linha)
+        if len(resultadoCarro) == 0:
+            print("Carro sem cadastro.\n")
+            return False
+        else: 
+            carro = resultadoCarro[0]
+            self.carro = carro
+            print("\nDescrição do carro alugado:\n")
+            for linha in resultadoCarro:
+                mostrar_informacao_carro(linha)
 
     def informacao_cliente(self):
         sql = f"select nome, cartao from clientes where idCPF = {self.idCliente}"
         cursor.execute(sql)
         resultadoCliente = cursor.fetchall()
-        cliente = resultadoCliente[0]
-        self.cliente = cliente
-        print("Cliente",self.cliente[0],"\n")
+        if len(resultadoCliente) == 0:
+            print("\nCliente sem cadastro.")
+            return False
+        else:
+            cliente = resultadoCliente[0]
+            self.cliente = cliente
+            print("Cliente",self.cliente[0],"\n")
+        return True
 
     def valor_aluguel(self, dias):
         valor_total = dias * self.carro[9]
@@ -54,31 +62,33 @@ class Aluguel:
         return True
 
     def retorno_multa(self,retorno):
-        cursor.execute(f"select * from aluguel where idcarro = {self.idCarro}")
+        cursor.execute(f"select * from aluguel where idcarro = {self.idCarro} and idcliente = {self.idCliente} and retorno is null")
         resultado_retorno = cursor.fetchall()
-        aluguel = resultado_retorno[0]
-
-        valor_diaria = aluguel[4] / aluguel[3]
-
-        data_retorno = datetime.datetime.strptime(retorno,'%Y-%m-%d')
-        previsao_retorno = datetime.datetime.combine(aluguel[7], datetime.time())
-        data_saida = datetime.datetime.combine(aluguel[6], datetime.time())
-        data_saida = datetime.datetime.combine(aluguel[6], datetime.time())
-
-        diferenca_dias = abs((previsao_retorno - data_retorno).days)
-        multa = valor_diaria * diferenca_dias * 1.3
-
-        if data_retorno < data_saida:
-            print("\nData de retorno menor que data de saída.\n")
+        if len(resultado_retorno) == 0:
+            print("\nAluguel não encontrado")
             return False
-        elif data_retorno != previsao_retorno:
-            print(f"\nCarro retornado com {diferenca_dias} dias de atraso.")
-            print(f"Diferença a pagar: R${multa:.2f}\n")
-        else: 
-            print("\nSem multa!")
+        else:
+            aluguel = resultado_retorno[0]
+            valor_diaria = aluguel[4] / aluguel[3]
 
-        self.data_retorno = data_retorno
-        self.multa = multa
+            data_retorno = datetime.datetime.strptime(retorno,'%Y-%m-%d')
+            previsao_retorno = datetime.datetime.combine(aluguel[7], datetime.time())
+            data_saida = datetime.datetime.combine(aluguel[6], datetime.time())
+
+            diferenca_dias = abs((previsao_retorno - data_retorno).days)
+            multa = valor_diaria * diferenca_dias * 1.3
+
+            if data_retorno < data_saida:
+                print("\nData de retorno menor que data de saída.\n")
+                return False
+            elif data_retorno != previsao_retorno:
+                print(f"\nCarro retornado com {diferenca_dias} dias de atraso.")
+                print(f"Diferença a pagar: R${multa:.2f}\n")
+            else: 
+                print("\nSem multa!")
+
+            self.data_retorno = data_retorno
+            self.multa = multa
         return True
 
     def pagamento(self,pgto):
@@ -98,6 +108,7 @@ class Aluguel:
         for aluguel in alugueis:
             carros_alugados.append(aluguel[1])
         print(carros_alugados)
+
         sql2 = "select * from carros"
         cursor.execute(sql2)
         todos_carros = cursor.fetchall()
@@ -126,9 +137,17 @@ class Aluguel:
 
     def atualizar_aluguel(self,idCarro):
         cursor=conexao.cursor()
-        sql = f"UPDATE aluguel SET valor_multa = '{self.multa}', retorno = '{self.data_retorno}' WHERE idcarro = '{self.idCarro}'"
-        cursor.execute(sql)
-        conexao.commit()
+        cursor.execute(f"select * from aluguel where idcarro = '{self.idCarro}'")
+        listados = cursor.fetchall()
+        lista = listados[0]
+        if lista[2] != self.idCliente:
+            print("CPF de devolução diferente do CPF do contrato.")
+            return False
+        else:
+            sql = f"UPDATE aluguel SET valor_multa = '{self.multa}', retorno = '{self.data_retorno}' WHERE idcarro = '{self.idCarro}'"
+            cursor.execute(sql)
+            conexao.commit()
+        return True
 
     def consultar_aluguel():
         sql = f"select * from aluguel"
@@ -154,23 +173,3 @@ def mostrar_informacao_carro(linha):
         print(f"Porte {linha[5]} - Câmbio {linha[6]}")
         print("Quantidade de Portas:",linha[7])
         print("Quantidade de passageiros suportado:",linha[8],"\n") 
-
-# cliente = "86460548021"
-# carro = "2"
-# alugando = Aluguel(cliente,carro)
-# alugando.consultar_aluguel()
-
-# alugando.listar_carros_disponiveis()
-
-# dt = alugando.datas("2020-01-02","2020-01-03")
-# if dt == False:
-#     raise Exception()
-
-# alugando.valor_aluguel(5)
-
-# ret_multa = alugando.retorno_multa("2020-01-01")
-# if ret_multa == False:
-#     raise Exception()
-# alugando.pagamento("cartao")
-# alugando.salvar_aluguel()
-# alugando.atualizar_aluguel()

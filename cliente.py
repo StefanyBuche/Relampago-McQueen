@@ -50,7 +50,7 @@ class Pessoa:
  
   @staticmethod
   def validar_email(validar_email):
-      validador = re.match(r'^[a-z-0-9_.+-]+@[a-z-0-9-]+\.[a-z-0-9]+', validar_email) 
+      validador = re.match(r'^[a-z-0-9_.+-]+@[a-z-0-9]+\.[a-z-0-9]+', validar_email) 
       # https://www.hashtagtreinamentos.com/regular-expressions-no-python?gad=1&gclid=Cj0KCQjw4s-kBhDqARIsAN-ipH2bqCI7kZgefuTenHNH8UPIZenfYGzxF0zvxpc4c-h1WHBDIJv4RxYaAtqSEALw_wcB
       if validador is None:
             print("Ops. E-mail inválido.")
@@ -100,16 +100,25 @@ class Cliente (Pessoa):
       return True
 
   def salvar_cliente_banco (self):
-      cursor=conexao.cursor()
+      cursor = conexao.cursor()
       sql = f"INSERT INTO clientes (idCPF, nome, email, telefone, cartao) VALUES ('{self.cpf}','{self.nome}','{self.email}','{self.telefone}','{self.cartao}')"
       cursor.execute(sql)
       conexao.commit()
 
-  def alterar_cliente_banco(cpf,nome,email,telefone,cartao):
+  def alterar_cliente_banco(self):
       cursor=conexao.cursor()
-      sql = f"UPDATE clientes SET nome = '{nome}', email = '{email}',telefone = '{telefone}',cartao ='{cartao}' WHERE idCPF = '{cpf}'"
-      cursor.execute(sql)
-      conexao.commit()
+      cursor.execute(f"select idCPF from clientes where idCPF = {self.cpf}")
+      tabela = cursor.fetchall()
+      
+      if len(tabela) == 0:
+        print(f"Cliente não encontrado")
+        
+      else:
+        cursor.execute(f"UPDATE clientes SET nome = '{self.nome}', email = '{self.email}',telefone = '{self.telefone}',\
+                        cartao ='{self.cartao}' WHERE idCPF = '{self.cpf}'")
+        print("\nAtualizado com Sucesso.\n")
+        conexao.commit()
+      
 
   def consultar_clientes_banco():
       sql = "select * from clientes"
@@ -118,11 +127,11 @@ class Cliente (Pessoa):
       print("\nNúmero total de  registro retornado: ",cursor.rowcount)
       print("Clientes:\n")
       for linha in linhas:
-          print("CPF:",linha[0])
-          print("Nome:",linha[1])
-          print("E-mail:",linha[2])
-          print("Nº telefone:",linha[3])
-          print("Nº Cartão:",linha[4],"\n")
+        print("CPF:",linha[0])
+        print("Nome:",linha[1])
+        print("E-mail:",linha[2])
+        print("Nº telefone:",linha[3])
+        print("Nº Cartão:",linha[4],"\n")
   
 
 class Funcionario (Pessoa):
