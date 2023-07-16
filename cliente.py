@@ -17,14 +17,17 @@ class Pessoa:
       self.email = email
       self.telefone = telefone
 
-  def nomear(self):
+  def nomear(nome):
     raise Exception("função não implementada")
 
   @staticmethod
   def validar_cpf(n_cpf):
     if len(n_cpf) != 11:
-        print("CPF inválido.")
+        print("\nCPF inválido.\n")
         return False
+    elif any(c.isalpha() for c in n_cpf):
+          print("\nErro no numero do CPF, Pode estar contendo letras.\n")
+          return False
 
     soma = 0
     for i in range(0, 9):
@@ -33,7 +36,7 @@ class Pessoa:
     if resto >9:
         resto = 0
     if resto != int(n_cpf[9]):
-        print("CPF inválido..")
+        print("\nCPF inválido..\n")
     else:
         soma = 0
         for i in range(0, 10):
@@ -42,9 +45,9 @@ class Pessoa:
         if resto>9:
             resto = 0
         if resto != int(n_cpf[10]):
-            print("CPF inválido...")
+            print("\nCPF inválido...\n")
         else:
-            print("CPF:",n_cpf)
+            print("\nCPF:",n_cpf,"\n")
       
         return True
  
@@ -53,16 +56,16 @@ class Pessoa:
       validador = re.match(r'^[a-z-0-9_.+-]+@[a-z-0-9]+\.[a-z-0-9]+', validar_email) 
       # https://www.hashtagtreinamentos.com/regular-expressions-no-python?gad=1&gclid=Cj0KCQjw4s-kBhDqARIsAN-ipH2bqCI7kZgefuTenHNH8UPIZenfYGzxF0zvxpc4c-h1WHBDIJv4RxYaAtqSEALw_wcB
       if validador is None:
-            print("Ops. E-mail inválido.")
+            print("\nOps. E-mail inválido.\n")
             return False
 
-      print("E-mail:",validar_email)
+      print("\nE-mail validado:",validar_email,"\n")
       return True
 
   @staticmethod
   def validar_numero(numero): #https://pypi.org/project/phonenumbers/
       if len(numero) < 12:
-            print("Número inválido. \nDigite o número com cód. postal do país(ex.'+55') e o DDD(ex'11')")
+            print("\nNúmero inválido. \nDigite o número com cód. postal do país(ex.'+55') e o DDD(ex'11')\n")
             return False
 
       try :
@@ -70,10 +73,10 @@ class Pessoa:
             # print(tell_ajustado)
             local = geocoder.description_for_number(tell_ajustado, 'pt-br')
             formato = phonenumbers.format_number(tell_ajustado, phonenumbers.PhoneNumberFormat.INTERNATIONAL)
-            print("Numero telefônico:",formato)
-            print("DDD de : ", local)
+            print("\nNumero telefônico:",formato)
+            print("DDD de : ", local,"\n")
       except:
-            print("Erro no nº de telefone.")
+            print("\nErro no nº de telefone.\n")
             return False
 
 
@@ -82,21 +85,28 @@ class Cliente (Pessoa):
     super().__init__(cpf,nome,email,telefone)
     self.cartao = cartao
 
-  def nomear(self):
-    print(self.nome)
+  @staticmethod
+  def nomear(nome):
+    if nome == '':
+        print("\nCampo Vazio.")
+        return False
+    
+    return True
 
   @staticmethod
   def validar_cartao(n_cartao):
       if len(n_cartao) != 16:
-          print ("Confira os números do seu cartão")
+          print ("\nConfira os números do seu cartão\n")
           return False
-
+      elif any(c.isalpha() for c in n_cartao):
+          print("\nErro no numero do cartão, Pode estar contendo letras.\n")
+          return False
       cartao_formatado = ''
       for i in range(0,16,4):
           cartao_formatado = cartao_formatado + n_cartao[i:i+4] + '.'
 
       cartao_formatado = cartao_formatado[:-1]
-      print(f'Cartão validado: {cartao_formatado}')
+      print(f'\nCartão validado: {cartao_formatado} \n')
       return True
 
   def salvar_cliente_banco (self):
@@ -104,6 +114,7 @@ class Cliente (Pessoa):
       sql = f"INSERT INTO clientes (idCPF, nome, email, telefone, cartao) VALUES ('{self.cpf}','{self.nome}','{self.email}','{self.telefone}','{self.cartao}')"
       cursor.execute(sql)
       conexao.commit()
+      print("Contrato de aluguel concluído.")
 
   def alterar_cliente_banco(self):
       cursor=conexao.cursor()
@@ -112,11 +123,12 @@ class Cliente (Pessoa):
       
       if len(tabela) == 0:
         print(f"Cliente não encontrado")
+        print("CPF do cliente não foi encontrado entre os contados salvos.")
         
       else:
         cursor.execute(f"UPDATE clientes SET nome = '{self.nome}', email = '{self.email}',telefone = '{self.telefone}',\
                         cartao ='{self.cartao}' WHERE idCPF = '{self.cpf}'")
-        print("\nAtualizado com Sucesso.\n")
+        print("\nAtualizado com Sucesso.")
         conexao.commit()
       
 

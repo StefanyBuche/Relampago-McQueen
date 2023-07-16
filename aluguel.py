@@ -117,7 +117,7 @@ class Aluguel:
             return carro[0] not in carros_alugados
 
         carros_disponiveis = list(filter(filtro, todos_carros))
-        print("\nCarros disponiveis: \n")
+        print("\n--Carros disponiveis:-- \n")
         for carro_disponivel in carros_disponiveis:
             mostrar_informacao_carro(carro_disponivel)
 
@@ -134,14 +134,23 @@ class Aluguel:
                 '{self.data_retorno_previo}','{self.pgto}')"
         cursor.execute(sql2)
         conexao.commit()
-
-    def atualizar_aluguel(self,idCarro):
+    
+    def corrigir_aluguel(self):
         cursor=conexao.cursor()
-        cursor.execute(f"select * from aluguel where idcarro = '{self.idCarro}'")
+        
+        cursor.execute(f"UPDATE aluguel SET dias_alugados = '{self.dias_alugados}', valor_total = '{self.valor_total}',\
+                        dia_saida = '{self.data_saida}', previsao_retorno = '{self.data_retorno_previo}',\
+                        forma_pagamento = '{self.pgto}' where idcarro = '{self.idCarro}'")
+        conexao.commit()
+
+    def registar_retorno(self,idCarro):
+        cursor=conexao.cursor()
+        cursor.execute(f"select * from aluguel where idcarro = '{self.idCarro}' and retorno is null")
         listados = cursor.fetchall()
         lista = listados[0]
         if lista[2] != self.idCliente:
-            print("CPF de devolução diferente do CPF do contrato.")
+            print("CPF de devolução diferente do CPF do contrato.\nTente novamente.\n")
+
             return False
         else:
             sql = f"UPDATE aluguel SET valor_multa = '{self.multa}', retorno = '{self.data_retorno}' WHERE idcarro = '{self.idCarro}'"
