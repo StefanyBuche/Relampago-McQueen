@@ -37,6 +37,7 @@ class Pessoa:
         resto = 0
     if resto != int(n_cpf[9]):
         print("\nCPF inválido..\n")
+        return False
     else:
         soma = 0
         for i in range(0, 10):
@@ -46,6 +47,7 @@ class Pessoa:
             resto = 0
         if resto != int(n_cpf[10]):
             print("\nCPF inválido...\n")
+            return False
         else:
             print("\nCPF:",n_cpf,"\n")
       
